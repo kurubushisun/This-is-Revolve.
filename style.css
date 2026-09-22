@@ -277,7 +277,7 @@ section {
     position: absolute;
     width: 100%;
     aspect-ratio: 1;
-    border: 1px solid currentColor;
+    border: 1px solid #333333;
     border-radius: 50%;
 }
 
@@ -293,11 +293,15 @@ section {
 .news-link:hover,
 .news-link:focus-visible {
     color: #EAEAEA;
-    background-color: #333333;
+}
+
+.news-link:hover::before,
+.news-link:focus-visible::before {
+    background-color: #2249B8;
 }
 
 .news-link:focus-visible {
-    outline: 2px solid #EAEAEA;
+    outline: 2px solid #333333;
     outline-offset: -5px;
 }
 
