@@ -1,3 +1,19 @@
+// カレンダーの写真を開閉し、ボタンの読み上げ内容も切り替える。
+document.querySelectorAll('.calendar-toggle').forEach((toggle) => {
+    const event = toggle.closest('.calendar-event');
+    const image = document.getElementById(toggle.getAttribute('aria-controls'));
+    const intro = event.querySelector('#orientation-intro');
+    const title = event.querySelector('.calendar-event-title').textContent;
+
+    toggle.addEventListener('click', () => {
+        const expanded = toggle.getAttribute('aria-expanded') !== 'true';
+        toggle.setAttribute('aria-expanded', String(expanded));
+        toggle.setAttribute('aria-label', `${title}の写真を${expanded ? '閉じる' : '開く'}`);
+        image.hidden = !expanded;
+        if (intro) intro.hidden = expanded;
+    });
+});
+
 if (window.jQuery && window.jQuery.fn.bgswitcher) {
     jQuery(function ($) {
         const reducedMotion = window.matchMedia('(prefers-reduced-motion: reduce)');
@@ -57,10 +73,64 @@ if (window.jQuery && window.jQuery.fn.slick) {
     duplicate.querySelectorAll('a').forEach((link) => { link.tabIndex = -1; });
     track.append(duplicate);
 
+    // 自動送りも手動操作も同じスクロール位置を使う。
+    const navReducedMotion = window.matchMedia('(prefers-reduced-motion: reduce)');
+    let cycleWidth = 0;
+    let pauseUntil = 0;
+    let touching = false;
+    let previousTime = 0;
+
+    function measureTrack() {
+        if (nav.hidden) return;
+        cycleWidth = items.getBoundingClientRect().width;
+        if (!cycleWidth || navReducedMotion.matches) return;
+        const count = Math.ceil(nav.clientWidth / cycleWidth) + 2;
+        while (track.children.length < count) track.append(duplicate.cloneNode(true));
+    }
+
+    function pauseAutoScroll() {
+        pauseUntil = performance.now() + 1200;
+    }
+
+    nav.addEventListener('wheel', (event) => {
+        if (event.ctrlKey) return;
+        const delta = Math.abs(event.deltaX) > Math.abs(event.deltaY) ? event.deltaX : event.deltaY;
+        if (!delta || nav.scrollWidth <= nav.clientWidth) return;
+        event.preventDefault();
+        pauseAutoScroll();
+        const unit = event.deltaMode === 1 ? 22 : event.deltaMode === 2 ? nav.clientWidth : 1;
+        nav.scrollLeft += delta * unit;
+    }, { passive: false });
+    nav.addEventListener('touchstart', () => { touching = true; }, { passive: true });
+    const endTouch = () => { touching = false; pauseAutoScroll(); };
+    nav.addEventListener('touchend', endTouch, { passive: true });
+    nav.addEventListener('touchcancel', endTouch, { passive: true });
+    nav.addEventListener('scroll', () => {
+        if (!cycleWidth || navReducedMotion.matches || nav.contains(document.activeElement)) return;
+        if (nav.scrollLeft >= cycleWidth * 2) nav.scrollLeft -= cycleWidth;
+        else if (nav.scrollLeft < cycleWidth) nav.scrollLeft += cycleWidth;
+    }, { passive: true });
+
+    function animateNavigation(time) {
+        const elapsed = previousTime ? Math.min(time - previousTime, 50) : 0;
+        previousTime = time;
+        if (!nav.hidden && cycleWidth && !navReducedMotion.matches && !touching &&
+            time >= pauseUntil && !nav.contains(document.activeElement)) {
+            nav.scrollLeft += cycleWidth * elapsed / 24000;
+        }
+        requestAnimationFrame(animateNavigation);
+    }
+    new ResizeObserver(measureTrack).observe(nav);
+    new ResizeObserver(measureTrack).observe(items);
+    navReducedMotion.addEventListener('change', () => {
+        nav.scrollLeft = 0;
+        measureTrack();
+    });
+    requestAnimationFrame(animateNavigation);
+
     const header = document.querySelector('.firstview');
     const footer = document.querySelector('.site-footer');
     const sections = [...document.querySelectorAll('section[id]')];
-    const links = [...nav.querySelectorAll('a')];
     let scheduled = false;
 
     function updateNavigation() {
@@ -75,7 +145,7 @@ if (window.jQuery && window.jQuery.fn.slick) {
         for (const section of sections) {
             if (section.getBoundingClientRect().top <= boundary + 1) active = section;
         }
-        links.forEach((link) => {
+        nav.querySelectorAll('a').forEach((link) => {
             const current = link.hash === `#${active.id}`;
             link.classList.toggle('is-current', current);
             if (current) link.setAttribute('aria-current', 'location');

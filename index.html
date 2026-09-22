@@ -5,8 +5,9 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>This is Revolve.</title>
         <meta property="og:title" content="This is Revolve.">
-        <meta property="og:images" content="http://kurubushisun.com">
-        <meta property="og:description content="慶應義塾大学のダンスサークルRevolveの紹介サイトです。活動内容やダンスジャンル、年間イベントなどを通して、ダンスでつながる仲間とRevolveの魅力を紹介します。">
+        <meta property="og:image" content="http://kurubushisun.com/img/about.png">
+        <meta property="og:image:alt" content="Revolveのメンバーの集合写真">
+        <meta property="og:description" content="慶應義塾大学のダンスサークルRevolveの紹介サイトです。活動内容やダンスジャンル、年間イベントなどを通して、ダンスでつながる仲間とRevolveの魅力を紹介します。">
     <link rel="icon" href="./favicon.ico">
     <link rel="preconnect" href="https://fonts.googleapis.com">
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
@@ -532,21 +533,5 @@
             <span>TOP</span>
         </a>
     </footer>
-    <script>
-        document.querySelectorAll('.calendar-toggle').forEach((toggle) => {
-            const event = toggle.closest('.calendar-event');
-            const image = document.getElementById(toggle.getAttribute('aria-controls'));
-            const intro = event.querySelector('#orientation-intro');
-            const title = event.querySelector('.calendar-event-title').textContent;
-
-            toggle.addEventListener('click', () => {
-                const expanded = toggle.getAttribute('aria-expanded') !== 'true';
-                toggle.setAttribute('aria-expanded', String(expanded));
-                toggle.setAttribute('aria-label', `${title}の写真を${expanded ? '閉じる' : '開く'}`);
-                image.hidden = !expanded;
-                if (intro) intro.hidden = expanded;
-            });
-        });
-    </script>
 </body>
 </html>

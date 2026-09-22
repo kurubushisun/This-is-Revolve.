@@ -945,7 +945,9 @@ section[id] {
     right: 15px;
     z-index: 10000;
     width: auto;
-    overflow: hidden;
+    overflow-x: auto;
+    overflow-y: hidden;
+    scrollbar-width: none;
     border: 1px solid #333333;
     background-color: #EAEAEA;
     color: #333333;
@@ -959,10 +961,13 @@ section[id] {
     display: none;
 }
 
+.section-nav::-webkit-scrollbar {
+    display: none;
+}
+
 .section-nav-track {
     display: flex;
     width: max-content;
-    animation: section-nav-scroll 24s linear infinite;
 }
 
 .section-nav-items {
@@ -987,19 +992,7 @@ section[id] {
     outline-offset: 2px;
 }
 
-@keyframes section-nav-scroll {
-    to { transform: translateX(-50%); }
-}
-
 @media (prefers-reduced-motion: reduce) {
-    .section-nav {
-        overflow-x: auto;
-    }
-
-    .section-nav-track {
-        animation: none;
-    }
-
     .section-nav-items[aria-hidden="true"] {
         display: none;
     }
