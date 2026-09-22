@@ -1,3 +1,49 @@
+const disclosureMotion = window.matchMedia('(prefers-reduced-motion: reduce)');
+const disclosureAnimations = new Map();
+
+function animateDisclosure(element, from, to, onFinish = () => {}) {
+    disclosureAnimations.get(element)?.finish();
+    if (disclosureMotion.matches || from === to) {
+        onFinish();
+        return;
+    }
+    const animation = element.animate([
+        { height: `${from}px`, overflow: 'hidden', boxSizing: 'border-box' },
+        { height: `${to}px`, overflow: 'hidden', boxSizing: 'border-box' },
+    ], { duration: 280, easing: 'ease-in-out' });
+    disclosureAnimations.set(element, animation);
+    animation.onfinish = () => {
+        disclosureAnimations.delete(element);
+        onFinish();
+    };
+}
+
+disclosureMotion.addEventListener('change', () => {
+    if (disclosureMotion.matches) {
+        disclosureAnimations.forEach((animation) => animation.finish());
+    }
+});
+
+document.querySelectorAll('.faq-item').forEach((item) => {
+    const summary = item.querySelector('summary');
+    let expanded = item.open;
+    summary.addEventListener('click', (event) => {
+        event.preventDefault();
+        const from = item.getBoundingClientRect().height;
+        const previous = disclosureAnimations.get(item);
+        if (previous) {
+            previous.cancel();
+            disclosureAnimations.delete(item);
+        }
+        expanded = !expanded;
+        item.open = expanded;
+        const to = item.getBoundingClientRect().height;
+        // 閉じる間も回答を描画し、アニメーション終了後に閉じる。
+        item.open = true;
+        animateDisclosure(item, from, to, () => { item.open = expanded; });
+    });
+});
+
 // カレンダーの写真を開閉し、ボタンの読み上げ内容も切り替える。
 document.querySelectorAll('.calendar-toggle').forEach((toggle) => {
     const event = toggle.closest('.calendar-event');
@@ -5,11 +51,26 @@ document.querySelectorAll('.calendar-toggle').forEach((toggle) => {
     const intro = event.querySelector('#orientation-intro');
     const title = event.querySelector('.calendar-event-title').textContent;
 
-    toggle.addEventListener('click', () => {
+    let request = 0;
+    toggle.addEventListener('click', async () => {
+        const currentRequest = ++request;
         const expanded = toggle.getAttribute('aria-expanded') !== 'true';
         toggle.setAttribute('aria-expanded', String(expanded));
         toggle.setAttribute('aria-label', `${title}の写真を${expanded ? '閉じる' : '開く'}`);
-        image.hidden = !expanded;
+        if (expanded) {
+            image.loading = 'eager';
+            await image.decode().catch(() => {});
+            if (currentRequest !== request) return;
+        }
+        const from = image.hidden ? 0 : image.getBoundingClientRect().height;
+        const previous = disclosureAnimations.get(image);
+        if (previous) {
+            previous.cancel();
+            disclosureAnimations.delete(image);
+        }
+        image.hidden = false;
+        const to = expanded ? image.getBoundingClientRect().height : 0;
+        animateDisclosure(image, from, to, () => { image.hidden = !expanded; });
         if (intro) intro.hidden = expanded;
     });
 });

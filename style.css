@@ -16,6 +16,9 @@ body::before {
 }
 
 section {
+    width: 100%;
+    max-width: 960px;
+    margin-inline: auto;
     background-color: transparent;
 }
 .title {
@@ -32,24 +35,26 @@ section {
 .title-text {
     position: relative;
     display: flex;
-    justify-content: center; 
-    align-items: center;
+    justify-content: center;
+    align-items: baseline;
     height: 80px;
+    padding-top: 8px;
+    white-space: nowrap;
 }
 
 .title-head {
     color: #E8D34E;
-    position: absolute;
+    position: relative;
+    flex-shrink: 0;
     font-size: 64px;
     line-height: 1;
     z-index: 1;
-    bottom: 0.265em;
-    right: 100%;
-    margin-right: -2.5em;
 }
 
 .title-tail {
     position: relative;
+    flex-shrink: 0;
+    margin-left: -0.3em;
     z-index: 2;
     line-height: 1;
 }
@@ -260,6 +265,17 @@ section {
     line-height: 1.5;
     letter-spacing: 0.06em;
     overflow-wrap: anywhere;
+}
+
+.news-link,
+.news-link::before,
+.genre-video-icon,
+.gallery-arrow,
+.firstview-nav a,
+.footer-nav a,
+.footer-top,
+.section-nav a {
+    transition: color 200ms ease, background-color 200ms ease;
 }
 
 .news-link {
@@ -545,12 +561,17 @@ section {
 }
 
 .calendar-toggle svg {
+    transition: transform 280ms ease;
     width: 22px;
     height: 22px;
     stroke: currentColor;
     stroke-width: 2;
     stroke-linecap: round;
     stroke-linejoin: round;
+}
+
+.calendar-toggle[aria-expanded="true"] svg {
+    transform: rotate(180deg);
 }
 
 .calendar-toggle[aria-expanded="true"] svg {
@@ -644,7 +665,16 @@ section {
 }
 
 @media (prefers-reduced-motion: reduce) {
-    .faq-icon {
+    .faq-icon,
+    .calendar-toggle svg,
+    .news-link,
+    .news-link::before,
+    .genre-video-icon,
+    .gallery-arrow,
+    .firstview-nav a,
+    .footer-nav a,
+    .footer-top,
+    .section-nav a {
         transition: none;
     }
 }
@@ -996,4 +1026,112 @@ section[id] {
     .section-nav-items[aria-hidden="true"] {
         display: none;
     }
+}
+
+/* PCでは本文の行幅を抑え、写真と情報を横に並べる。 */
+@media (min-width: 900px) {
+    .title {
+        height: 112px;
+        margin-block: 48px 32px;
+        font-size: 48px;
+    }
+
+    .title-text {
+        height: 112px;
+        padding-top: 12px;
+    }
+
+    .title-head { font-size: 88px; }
+
+    .news-list,
+    .genres-list,
+    .calendar-list,
+    .gallery-carousel {
+        width: calc(100% - 96px);
+        max-width: 1120px;
+        margin-inline: auto;
+    }
+
+    .sentence {
+        width: 551px;
+        height: 601px;
+        grid-template-columns: repeat(11, 49px);
+        grid-template-rows: repeat(12, 49px);
+        margin-block: 32px;
+    }
+
+    .rotate-text { font-size: 48px; }
+    .about-card1, .about-card2 { padding: 24px; }
+    .about-text { font-size: 17px; line-height: 1.8; }
+    .sns-title { font-size: 16px; }
+    .sns { gap: 12px; }
+    .sns img { width: 32px; }
+
+    .feature {
+        width: 551px;
+        height: 116px;
+        grid-template-columns: repeat(3, minmax(0, 1fr));
+        margin-block: 32px 56px;
+    }
+
+    .data-text { font-size: 64px; }
+    .data-unit { font-size: 18px; bottom: 40px; right: 20px; }
+    .label { font-size: 14px; }
+
+    .news-item { min-height: 140px; }
+    .news-content { padding: 24px 32px; }
+    .news-date { font-size: 18px; }
+    .news-description { font-size: 22px; margin-top: 12px; }
+    .news-link { flex-basis: 140px; min-width: 140px; }
+
+    .genres-list {
+        grid-template-columns: repeat(2, minmax(0, 1fr));
+        gap: 40px 24px;
+        padding-block: 32px 48px;
+    }
+
+    .genre-title { font-size: 24px; width: max(240px, 60%); }
+    .genre-description { font-size: 16px; line-height: 1.9; padding: 20px; }
+    .genre-video { font-size: 15px; height: 36px; }
+
+    .calendar-list {
+        display: grid;
+        grid-template-columns: repeat(2, minmax(0, 1fr));
+        gap: 40px 48px;
+        align-items: start;
+        padding-block: 16px 48px;
+    }
+
+    .calendar-month + .calendar-month { margin-top: 0; }
+    .calendar-event-title { font-size: 22px; padding-block: 10px; }
+    .calendar-event-description { font-size: 16px; line-height: 1.9; padding: 20px 20px 24px; }
+    .calendar-toggle { width: 32px; height: 32px; }
+
+    .faq-list {
+        width: calc(100% - 96px);
+        max-width: 900px;
+        margin-inline: auto;
+        padding-bottom: 64px;
+        font-size: 17px;
+    }
+
+    .faq-question, .faq-answer { padding: 22px 28px; gap: 20px; }
+    .faq-question { min-height: 76px; }
+    .faq-answer { line-height: 1.9; }
+
+    .firstview-nav, .footer-nav {
+        flex-direction: row;
+        flex-wrap: wrap;
+        justify-content: center;
+        gap: 20px 36px;
+        width: 100%;
+        padding-left: 0;
+        font-size: 28px;
+    }
+
+    .firstview { padding-bottom: 48px; }
+    .firstview-logo { margin-bottom: 10svh; }
+    .section-nav { font-size: 26px; }
+    .section-nav-items { gap: 44px; padding-block: 10px; }
+    section[id] { scroll-margin-top: 80px; }
 }
