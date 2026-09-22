@@ -434,6 +434,7 @@ section {
     display: flex;
     align-items: flex-end;
     width: calc(62% + 1px);
+    min-width: max-content;
     margin-left: -1px;
     padding-top: 16px;
     border-bottom: 1px solid #333333;
@@ -468,6 +469,30 @@ section {
     border: 1px solid #333333;
     background-color: #EAEAEA;
     font-family: "Zen Kaku Gothic New", sans-serif;
+}
+
+.calendar-month + .calendar-month {
+    margin-top: 36px;
+}
+
+.calendar-event + .calendar-event {
+    margin-top: 34px;
+}
+
+.calendar-month:nth-child(odd) .calendar-event {
+    margin-left: 14px;
+    margin-right: auto;
+}
+
+.calendar-month:nth-child(even) .calendar-month-title {
+    justify-content: flex-end;
+    margin-left: auto;
+    margin-right: -1px;
+}
+
+.calendar-month:nth-child(even) .calendar-event {
+    margin-left: auto;
+    margin-right: 14px;
 }
 
 .calendar-event-title {
@@ -531,4 +556,91 @@ section {
 .calendar-toggle:focus-visible {
     outline: 2px solid #2249B8;
     outline-offset: 3px;
+}
+
+.FAQ .title {
+    margin-bottom: 0;
+}
+
+.faq-list {
+    width: calc(100% - 32px);
+    margin: 0 auto;
+    padding-bottom: 40px;
+    color: #333333;
+    font-family: "Zen Kaku Gothic New", sans-serif;
+    font-size: 13px;
+    letter-spacing: 0.06em;
+    line-height: 1.7;
+}
+
+.faq-item {
+    border-bottom: 1px solid #333333;
+}
+
+.faq-question {
+    display: grid;
+    grid-template-columns: 20px minmax(0, 1fr) 20px;
+    align-items: center;
+    gap: 10px;
+    min-height: 44px;
+    padding: 10px 12px;
+    background-color: #EAEAEA;
+    list-style: none;
+    cursor: pointer;
+}
+
+.faq-question::-webkit-details-marker {
+    display: none;
+}
+
+.faq-letter {
+    font-family: "Oswald", sans-serif;
+    font-size: 20px;
+    font-weight: 400;
+    line-height: 1.4;
+}
+
+.faq-icon {
+    position: relative;
+    width: 18px;
+    height: 18px;
+    transition: transform 200ms ease;
+}
+
+.faq-icon::before,
+.faq-icon::after {
+    content: "";
+    position: absolute;
+    inset: 50% 0 auto;
+    height: 1px;
+    background-color: #333333;
+}
+
+.faq-icon::after {
+    transform: rotate(90deg);
+}
+
+.faq-item[open] .faq-icon {
+    transform: rotate(45deg);
+}
+
+.faq-answer {
+    display: grid;
+    grid-template-columns: 20px minmax(0, 1fr);
+    align-items: start;
+    gap: 10px;
+    padding: 10px 12px 14px;
+    background-color: #2249B8;
+    color: #EAEAEA;
+}
+
+.faq-question:focus-visible {
+    outline: 2px solid #2249B8;
+    outline-offset: -3px;
+}
+
+@media (prefers-reduced-motion: reduce) {
+    .faq-icon {
+        transition: none;
+    }
 }
